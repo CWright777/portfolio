@@ -1,0 +1,7 @@
+* {
+}
+
+$brand-neutral-colors: (maroon, blue, blue, blue);
+$brand-accent-colors: (blue, #614767, #ff8d6d);
+$brand-color: maroon;
+@import '../../node_modules/grommet/scss/grommet-core/index.scss';
