@@ -15,9 +15,9 @@ const common = {
   entry: {
     app: ['babel-polyfill',PATHS.app]
   },
-  resolve: {
-    extensions: ['', '.js', '.jsx']
-  },
+    //resolve: {
+    //extensions: ['', '.js', '.jsx']
+  //},
   output: {
     path: PATHS.build,
     filename: 'bundle.js'
