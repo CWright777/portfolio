@@ -9,9 +9,9 @@ import {
   Heading,
 } from 'grommet';
 import { connect } from 'react-redux';
-import GithubIcon from 'grommet/components/icons/base/socialgithub';
-import LinkedInIcon from 'grommet/components/icons/base/sociallinkedin';
-import EmailIcon from 'grommet/components/icons/base/socialemail';
+import GithubIcon from 'grommet/components/icons/base/SocialGithub';
+import LinkedInIcon from 'grommet/components/icons/base/SocialLinkedin';
+import EmailIcon from 'grommet/components/icons/base/SocialEmail';
 
 
 const Application = props => {
