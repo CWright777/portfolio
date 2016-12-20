@@ -3,7 +3,6 @@ import "babel-polyfill";
 import React from 'react';
 import ReactDOM from 'react-dom';
 import { Router, Route, browserHistory, applyRouterMiddleware, IndexRoute } from 'react-router';
-import { createStore, applyMiddleware } from 'redux';
 import {Provider} from 'react-redux';
 import thunkMiddleware from 'redux-thunk'
 import createLogger from 'redux-logger';
