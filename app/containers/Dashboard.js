@@ -42,6 +42,11 @@ export class Dashboard extends Component {
           linkTo='https://portfolio-og.cliffordwright.com'
         />
         <ImageHolder
+          title='Devine React Native App'
+          imageSrc='https://s3-us-west-1.amazonaws.com/cliff-website/React_Native.png'
+          linkTo='http://imgur.com/a/sqZMf'
+        />
+        <ImageHolder
           title='Network Switch Manager'
           imageSrc='https://s3-us-west-1.amazonaws.com/cliff-website/SwitchManager'
           linkTo='https://github.com/CWright777/cisco-switch-manager'
