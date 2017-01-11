@@ -1,81 +1,86 @@
 const path = require('path');
-const Webpack = require('webpack');
+const HtmlWebpackPlugin = require('html-webpack-plugin');
 const merge = require('webpack-merge');
-const NpmInstallPlugin = require('npm-install-webpack-plugin');
+const webpack = require('webpack');
 
-const TARGET = process.env.npm_lifecycle_event;
+const parts = require('./webpack.parts');
+
 const PATHS = {
   app: path.join(__dirname, 'app'),
+  style: path.join(__dirname, 'app', 'style', 'main.scss'),
   build: path.join(__dirname, 'build')
 };
 
-process.env.BABEL_ENV = TARGET;
-
 const common = {
   entry: {
-    app: ['babel-polyfill',PATHS.app]
+    style: PATHS.style,
+    app: PATHS.app
   },
-    //resolve: {
-    //extensions: ['', '.js', '.jsx']
-  //},
   output: {
     path: PATHS.build,
-    filename: 'bundle.js'
+    filename: '[name].js'
   },
-  module: {
-    loaders: [
-      {
-        test: /\.scss$/,
-        loader: 'style!css!sass?outputStyle=expanded&' +
-          'includePaths[]=' +
-          (encodeURIComponent(path.resolve('./node_modules')))
+  plugins: [
+    new HtmlWebpackPlugin({
+      template : __dirname + '/app/index.html'
+    }),
+    new webpack.LoaderOptionsPlugin({
+      options: {
+        sassLoader: {
+          includePaths: [
+            './node_modules',
+            // this is required only for NPM < 3.
+            // Dependencies are flat in NPM 3+ so pointing to
+            // the internal grommet/node_modules folder is not needed
+            './node_modules/grommet/node_modules'
+          ]
+        },
+        context: __dirname,
       },
-      {
-        test: /\.css$/,
-        loader: 'style!css?sourceMap' 
-      },
-      {
-        test: /\.jsx?$/,
-        loaders: ['babel?cacheDirectory'],
-      },
-      {
-        test: /\.json$/, loader: 'json' 
-      }
-    ]
-  }
-};
+    }),
+  ],
+}
 
-// Default configuration
-if(TARGET === 'start' || !TARGET) {
-  module.exports = merge(common, {
-    devtool: 'eval-source-map',
-    devServer: {
-      contentBase: PATHS.build,
-      historyApiFallback: true,
-      hot: true,
-      inline: true,
-      progress: true,
-      stats: 'errors-only',
+module.exports = function(env) {
+  if (env === 'build') {
+    return merge(
+      common,
+      parts.babelify(PATHS.app),
+      {
+        devtool: 'source-map',
+        output: {
+          path: PATHS.build,
+          filename: '[name].[chunkhash].js',
+          chunkFilename: '[chunkhash].js'
+        }
+      },
+      parts.clean(PATHS.build),
+      parts.extractBundle({
+        name: 'vendor',
+        entries: ['react']
+      }),
+      parts.setFreeVariable(
+        'process.env.NODE_ENV',
+        'production'
+      ),
+      parts.minify(),
+      parts.extractCSS(PATHS.style)
+    );
+  }
+
+  return merge(
+    common,
+    parts.babelify(PATHS.app),
+    {
+      devtool: 'eval-source-map',
+      performance: {
+        hints: false
+      }
+    },
+    parts.setupSASS(PATHS.app),
+    parts.devServer({
       host: process.env.HOST,
       port: process.env.PORT
-    },
-    plugins: [
-      new Webpack.HotModuleReplacementPlugin(),
-      new NpmInstallPlugin({
-        save: true // --save
-      })
-    ]
-  });
-}
-
-if(TARGET === 'build') {
-  module.exports = merge(common, {
-    devtool: 'cheap-module-source-map',
-    plugins: [
-      new Webpack.optimize.CommonsChunkPlugin('common.js'),
-      new Webpack.optimize.DedupePlugin(),
-      new Webpack.optimize.UglifyJsPlugin(),
-      new Webpack.optimize.AggressiveMergingPlugin()
-    ]
-  });
-}
+    })
+  )
+};
